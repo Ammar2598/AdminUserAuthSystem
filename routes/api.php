@@ -15,21 +15,18 @@ use Illuminate\Support\Facades\Hash;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 Route::post('login', 'Api\ApiController@login');
-Route::post('register', 'Api\ApiController@register');
- 
+Route::get('find/user/{id}','Api\ApiController@show');
+    Route::post('insert/user','Api\ApiController@store');
+    Route::put('update/user/{id}','Api\ApiController@update');
+
 Route::group(['middleware' => 'auth.jwt'], function () {
     Route::get('logout', 'Api\ApiController@logout');
- 
+
      //user CRUD
 
 
-    Route::get('find/user','Api\ApiController@show');
-    Route::post('insert/user','Api\ApiController@store');
-    Route::put('update/user/{id}','Api\ApiController@update');
     Route::get('delete/user/{id}','Api\ApiController@destroy');
 
  

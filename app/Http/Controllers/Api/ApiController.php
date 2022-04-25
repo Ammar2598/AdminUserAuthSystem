@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 
 class ApiController extends Controller
@@ -27,23 +28,7 @@ class ApiController extends Controller
             'token' => $jwt_token,
         ]);
     }
- public function register(RegisterAuthRequest $request)
-    {
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
  
-        if ($this->loginAfterSignUp) {
-            return $this->login($request);
-        }
- 
-        return response()->json([
-            'success' => true,
-            'data' => $user
-        ], Response::HTTP_OK);
-    }
      public function logout(Request $request)
     {
         $this->validate($request, [
@@ -76,22 +61,14 @@ class ApiController extends Controller
         return response()->json(['user' => $user]);
     }
 
-    ///user Crud
-   protected $user=User;
- 
-    public function __construct()
-    {
-        $this->user = JWTAuth::parseToken()->authenticate();
-    }
-
     public function show($id)
-    {
-        $user = $this->user->users()->find($id);
+    { 
+        $user = User::find($id);
     
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, user with id ' . $id . ' cannot be found'
+                'message' => 'Sorry, user with id cannot be found'
             ], 400);
         }
     
@@ -102,8 +79,8 @@ class ApiController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|integer',
-            'phone' => 'required|integer',
+            'email' => 'required',
+            'phone' => 'required',
             'password'=>'required'
         ]);
     
@@ -113,7 +90,7 @@ class ApiController extends Controller
         $user->phone = $request->phone;
         $user->password =Hash::make($request->password);
     
-        if ($this->user->users()->save($user))
+        if ($user->save())
             return response()->json([
                 'success' => true,
                 'user' => $user
@@ -127,7 +104,8 @@ class ApiController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = $this->user->users()->find($id);
+    	dd('hhh');
+        $user = User::find($id);
     
         if (!$user) {
             return response()->json([
